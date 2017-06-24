@@ -1,0 +1,12 @@
+packrat/lib*/
+packrat/*
+packrat/src/
+.Rproj.user
+.Rhistory
+.Rprofile
+srtm*
+*.Rproj
+readme.txt
+^rsconnect/*
+rsconnect/*
+rsconnect/
