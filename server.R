@@ -153,8 +153,14 @@ server <- function(input, output) {
       file.rename(myshape[i,4], paste0(dir,"/",myshape[i,1]))
     }
     getshp <- list.files(dir, pattern="*.shp", full.names=TRUE)
+
+	# shpnoext <- sub(".+\\/","",getshp); shpnoext
+    # shpnoext <- sub(".shp","",shpnoext);shpnoext
     # getproj <- list.files(dir, pattern="*.prj", full.names=TRUE)
-    maptools::readShapePoly(getshp, proj4string = CRS(as.character(input$SpRefSys))); 
+    maptools::readShapePoly(getshp, proj4string = CRS(as.character(input$SpRefSys)));
+    # rgdal::readOGR(dsn = dir, layer = shpnoext, p4s = (as.character(input$SpRefSys)), verbose = F);
+
+	
   })
   
   
