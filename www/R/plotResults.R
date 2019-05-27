@@ -35,22 +35,22 @@
 #' during all iterations. (data.frame)
 #'
 #' @author Sebastian Gatscha
-plotResult <- function(result,Polygon1,best=1,plotEn=1,
-                       topographie=FALSE,Grid,Projection){
-  # library(raster); library(stats); library(sp); library(calibrate)
-  # result = ResG;Polygon1 = shap; best = 1; plotEn = 2; topographie = F; Grid = Grid
-  #rm(order2,orderb,orderc,runs,a,ar,by_cycl,b,ProjLAEA,result,i,Polygon1,windraster,windr,best,EnergyBest,EfficiencyBest,Col,Col1,plotEn,op,order1)
+plotResult <- function(result, Polygon1, best = 1, plotEn = 1,
+                       topographie = FALSE, Grid, Projection){
   
   ## Set graphical parameters
-  op <- par(ask=FALSE);   on.exit(par(op));   par(mfrow=c(1,1))
+  op <- par(ask = FALSE)
+  on.exit(par(op))
+  par(mfrow = c(1, 1))
   
   ## Check Projections and reference systems
   if (missing(Projection)) {
     ProjLAEA = "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
     +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
   } else {
-    ProjLAEA <- Projection;
+    ProjLAEA <- Projection
   }
+  
   if (as.character(raster::crs(Polygon1)) != ProjLAEA) {
     Polygon1 <- sp::spTransform(Polygon1, CRSobj = ProjLAEA)
   }
@@ -68,8 +68,7 @@ plotResult <- function(result,Polygon1,best=1,plotEn=1,
     result <- result[,2][order1]
     ledup <- length(result)
     
-    rectid <- (lapply(result, function(x) x$Rect_ID));
-    
+    rectid <- lapply(result, function(x) x[,8])
     rectidt <- !duplicated(rectid)
     result <- result[rectidt]
     ndif <- length(result)
@@ -90,20 +89,29 @@ plotResult <- function(result,Polygon1,best=1,plotEn=1,
     EnergyBest$EnergyOverall <- round(EnergyBest$EnergyOverall, 2)
     EnergyBest$EfficAllDir <- round(EnergyBest$EfficAllDir, 2)
     
-    plot(Polygon1, col="lightblue", main=paste("Best Energy:", best, "\n","Energy Output",
-                                               EnergyBest$EnergyOverall[[1]],"kW", "\n", "Efficiency:",
-                                               EnergyBest$EfficAllDir[[1]]));
+    plot(Polygon1, col = "lightblue", 
+         main = paste("Best Energy:", best, "\n","Energy Output",
+                      EnergyBest$EnergyOverall[[1]], "kW", "\n", "Efficiency:",
+                      EnergyBest$EfficAllDir[[1]]))
+    
     # plot(srtm_crop,add=T,alpha=0.4)
-    plot(Grid,add=T)
+    plot(Grid, add = T)
     
     # graphics::mtext("Total wake effect in %", side = 2)
-    graphics::points(EnergyBest$X,EnergyBest$Y,cex=2,pch=20,col=Col)
-    graphics::text(EnergyBest$X, EnergyBest$Y, round(EnergyBest$AbschGesamt,0), cex=0.8, pos=1, col="black")
+    graphics::points(EnergyBest$X,
+                     EnergyBest$Y,
+                     cex = 2, pch = 20, col = Col)
+    graphics::text(EnergyBest$X, 
+                   EnergyBest$Y, 
+                   round(EnergyBest$AbschGesamt), cex = 0.8, pos = 1, col = "black")
     #("Wake Effect in %")
     
-    distpo <- stats::dist(x = cbind(EnergyBest$X,EnergyBest$Y),method = "euclidian")
-    graphics::mtext(paste("minimal Distance", round(min(distpo),2)), side = 1,line=0)
-    graphics::mtext(paste("mean Distance", round(mean(distpo),2)), side = 1,line=1)
+    distpo <- stats::dist(x = cbind(EnergyBest$X,EnergyBest$Y),
+                          method = "euclidian")
+    graphics::mtext(paste("minimal Distance",
+                          round(min(distpo), 2)), side = 1, line = 0)
+    graphics::mtext(paste("mean Distance", 
+                          round(mean(distpo), 2)), side = 1, line = 1)
     #mtext(paste("max. Distance", round(max(distpo),2)), side = 1,line=2)
     
     
@@ -113,13 +121,14 @@ plotResult <- function(result,Polygon1,best=1,plotEn=1,
   }
   
   ## Plot Best Efficiency
-  if (plotEn == 2){
+  if (plotEn == 2) {
     a <- sapply(result[,3], "[", "EfficAllDir")
     b <- data.frame(sapply(a, function(x) x[1]))
     order2 <- order(b, decreasing = T)
     result <- result[,3][order2]
     ledup <- length(result)
-    rectid <- lapply(result, function(x) x$Rect_ID)
+
+    rectid <- lapply(result, function(x) x[,8])
     rectidt <- !duplicated(rectid)
     result <- result[rectidt]
     ndif <- length(result)
@@ -131,35 +140,42 @@ plotResult <- function(result,Polygon1,best=1,plotEn=1,
     ## Assign the colour depending on the individual wind speed (from windraster and influence)
     br = length(levels(factor(EfficiencyBest$AbschGesamt)))
     if (br > 1) {
-      Col1 <- rbPal1(br)[as.numeric(cut(EfficiencyBest$AbschGesamt,breaks = br))]
+      Col1 <- rbPal1(br)[as.numeric(cut(EfficiencyBest$AbschGesamt, breaks = br))]
     } else {
       Col1 = "green"
     }
     
     EfficiencyBest$EnergyOverall <- round(EfficiencyBest$EnergyOverall, 2)
     EfficiencyBest$EfficAllDir <- round(EfficiencyBest$EfficAllDir, 2)
-    raster::plot(Polygon1, col="lightblue", main=paste("Best Efficiency:", best, "\n","Energy Output",
-                                                       EfficiencyBest$EnergyOverall[[1]],"kW", "\n", "Efficiency:",
-                                                       EfficiencyBest$EfficAllDir[[1]]));
+    raster::plot(Polygon1, col = "lightblue", 
+                 main = paste("Best Efficiency:", best, "\n","Energy Output",
+                              EfficiencyBest$EnergyOverall[[1]],"kW", "\n", "Efficiency:",
+                              EfficiencyBest$EfficAllDir[[1]]))
+    
     #plot(windraster,add=T, col=rainbow(50,alpha = 0.3))
-    plot(Grid,add=T)
+    plot(Grid, add = T)
     # graphics::mtext("Gesamtabschattung in %", side = 2)
     
-    graphics::points(EfficiencyBest$X,EfficiencyBest$Y,col=Col1,cex=2,pch=20)
-    graphics::text(EfficiencyBest$X, EfficiencyBest$Y, round(EfficiencyBest$AbschGesamt,0), cex=0.8, pos=1)
+    graphics::points(EfficiencyBest$X, 
+                     EfficiencyBest$Y, 
+                     col = Col1, cex = 2, pch = 20)
+    
+    graphics::text(EfficiencyBest$X, 
+                   EfficiencyBest$Y, 
+                   round(EfficiencyBest$AbschGesamt), cex = 0.8, pos = 1)
     
     
-    distpo <- stats::dist(x = cbind(EfficiencyBest$X,EfficiencyBest$Y),method = "euclidian")
-    graphics::mtext(paste("minimal Distance", round(min(distpo),2)), side = 1,line=0)
-    graphics::mtext(paste("mean Distance", round(mean(distpo),2)), side = 1,line=1)
+    distpo <- stats::dist(x = cbind(EfficiencyBest$X,
+                                    EfficiencyBest$Y),
+                          method = "euclidian")
+    graphics::mtext(paste("minimal Distance",
+                          round(min(distpo), 2)), side = 1, line = 0)
+    graphics::mtext(paste("mean Distance",
+                          round(mean(distpo), 2)), side = 1, line = 1)
     #mtext(paste("max. Distance", round(max(distpo),2)), side = 1,line=2)
-    
-    
-    
     
     ResPlotResult <- EfficiencyBest
   }
   
   return(ResPlotResult)
 }
-

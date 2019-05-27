@@ -49,7 +49,7 @@ crossover1        <- function(se6,u, uplimit,crossPart) {
   #rm(selOut,se6,numel,i,a1,a2,b1,b2,a3,b3,j,c1,c2,d1,d2,c3,d3)
   #se6 = parents_new; crossPart=crossPart1;
 
-  cat(paste("crossover point rate: ",u+1))
+  # cat(paste("crossover point rate: ",u+1))
   se6fit <- se6[[2]][1,-1]; se6 <- se6[[1]]
 
   se6 = se6[,-1]; parid <- sample(1:length(se6));
@@ -127,18 +127,18 @@ crossover1        <- function(se6,u, uplimit,crossPart) {
     break()
   }
 
-  cat(paste("\nHow many parental pairs are at hand: ",length(z)))
-  cat(paste("\nHow many permutations are possible: ", length(z)*(2^(trunc(u)+1))))
+  # cat(paste("\nHow many parental pairs are at hand: ",length(z)))
+  # cat(paste("\nHow many permutations are possible: ", length(z)*(2^(trunc(u)+1))))
 
   partaksur = ncol(nI)
   if (partaksur >= uplimit){
     partaksur = uplimit
-    cat(paste("\nPopulation max limit reached: ", uplimit ))
+    # cat(paste("\nPopulation max limit reached: ", uplimit ))
   }
 
   # Select only some of the available permutations. Take fitness value as prop value.
   partak <- sort(sample(1:length(nI[1,]),partaksur,prob = fitChi));
-  cat(paste("\nHow many permutations are selected: ", length(partak), "\n"))
+  # cat(paste("\nHow many permutations are selected: ", length(partak), "\n"))
   nI <- nI[,partak]
 
   return(nI)

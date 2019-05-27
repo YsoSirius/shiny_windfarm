@@ -21,18 +21,20 @@
 #' @author Sebastian Gatscha
 StartGA           <- function(Grid, n, nStart=100) {
   if (length(Grid$ID) <= n) {
-    print("################### GA ERROR MESSAGE ###################")
-    print(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
-    stop("\n The amount of Grid-cells is smaller or equal the number of turbines requested.\n
+    cat("################### GA ERROR MESSAGE ###################")
+    cat(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
+    cat("\n")
+    stop("The amount of Grid-cells is smaller or equal the number of turbines requested.
          Decrease Resolution (fcrR), number of turbines (n), or Rotorradius (Rotor).")
     cat("Press [enter] to continue")
     readline()
   }
   if (length(Grid$ID) < (2*n)) {
-    print("################### GA ERROR MESSAGE ###################")
-    print(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
-    stop("\n The amount of Grid-cells should at least be double the size of turbines requested.\n
-          Decrease Resolution (fcrR), number of turbines (n), or Rotorradius (Rotor).")
+    cat("################### GA ERROR MESSAGE ###################")
+    cat(paste("##### Amount Grid-cells: ", length(Grid$ID),"\n##### Amount of turbines: ", n))
+    cat("\n")
+    stop("The amount of Grid-cells should at least be double the size of turbines requested.
+         Decrease Resolution (fcrR), number of turbines (n), or Rotorradius (Rotor).")
     print("Press [enter] to continue")
     readline()
   }

@@ -71,7 +71,7 @@ GridFilter <- function(shape, resol = 500, prop = 1,plotGrid=FALSE){
   dry.grid <- sp::spTransform(dry.grid, sp::CRS(sp::proj4string(shape)))
 
   if(!any(dry.grid$layer >= prop)) {
-    print("\n################### GA ERROR MESSAGE ###################")
+    cat("\n################### GA ERROR MESSAGE ###################")
     stop("A grid cannot be drawn. Reduce the resolution.")
   }
 
@@ -93,14 +93,17 @@ GridFilter <- function(shape, resol = 500, prop = 1,plotGrid=FALSE){
   y <- lapply(dry.grid.filtered@polygons, function(x) sapply(x@Polygons, function(y) y@coords[,2]))
 
 
-  rect_Nu <- rgeos::gCentroid(dry.grid.filtered,byid = T);  raster::plot(rect_Nu,add=T)
+  rect_Nu <- rgeos::gCentroid(dry.grid.filtered,byid = T);  
   centpo <- sp::coordinates(rect_Nu);     centpo <- as.data.frame(centpo)
   centpo$ID <- 1:nrow(centpo);     names(centpo) <- c("X","Y","ID")
   centpo <- dplyr::select(centpo, ID,X,Y)
 
-  graphics::points(centpo$X,centpo$Y, col="blue", pch=20)
-  graphics::text(centpo$X,centpo$Y,labels=centpo$ID, pos=2)
-
+  if (plotGrid == TRUE){
+    raster::plot(rect_Nu,add=T)
+    graphics::points(centpo$X,centpo$Y, col="blue", pch=20)
+    graphics::text(centpo$X,centpo$Y,labels=centpo$ID, pos=2)
+  }
+  
   centpo <- list(centpo,dry.grid.filtered)
   invisible(centpo)
 }

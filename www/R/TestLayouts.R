@@ -300,7 +300,8 @@ calculateEnTST       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughn
   cT <- 0.88;   air_rh <- 1.225;   k = 0.075;
   ## Extract values from windraster, which will be 1 in this case, as they will get multiplied
   ## by the incoming wind speed.
-  windpo <- raster::extract(x= windraster, y = as.matrix((sel1)), buffer=resol*1, small=T,fun= mean,na.rm=T);
+  windpo <- raster::extract(x = windraster, y = as.matrix((sel1)), 
+                            buffer = resol*1, small = T, fun = mean, na.rm = T)
   
   ## Terrain Effect Model:
   if (topograp == TRUE) {
@@ -377,7 +378,7 @@ calculateEnTST       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughn
   ## For every wind direction, calculate the energy output. Do so by rotating Polygon for all angles and
   ## analyze, which turbine is affected by another one to calculate total energy output.
   ## Save Output in a list.
-  alllist <- vector("list",nrow(dirSpeed))
+  alllist <- vector("list", nrow(dirSpeed))
   for (index in 1:nrow(dirSpeed)) {
     ## Get the Coordinates of the individual / wind farm
     xyBgldMa <- as.matrix((sel1));
@@ -417,11 +418,13 @@ calculateEnTST       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughn
     }
     
     ## If Height is taken into account. 3D Modelling of Wake and Overlapping Areas
-    DatFram <- data.table::data.table(cbind(pointWind,xyBgldMa)); colnames(DatFram)=c("Windmittel","X","Y");
+    DatFram <- cbind(pointWind, xyBgldMa)
+    colnames(DatFram) = c("Windmittel","X","Y")
     
     ## Get the influecing points given with incoming wind direction angle and reduce then to data frame
-    BgleInf <- InfluPoints(t = xyBgldMa,wnkl =  wnkl, dist = distanz, polYgon = polygon1, dirct = angle)
-    dfAll <- do.call("rbind",BgleInf) ;
+    BgleInf <- InfluPoints(t = xyBgldMa, wnkl =  wnkl, dist = distanz, polYgon = polygon1, dirct = angle)
+    dfAll <- do.call("rbind",BgleInf)
+    dfAll <- as.data.frame(dfAll)
     
     ## Create a list for every turbine
     windlist = vector("list",length(sel1[,1]))
@@ -547,34 +550,3 @@ calculateEnTST       <- function(sel, referenceHeight, RotorHeight,SurfaceRoughn
 }
 
 
-
-
-
-
-
-
-#
-# Reck <- readShapePoly("C:/Users/Bobo/Desktop/Wing_GA_Pkg/__ExampleFiles/Shapefiles/Grosvened.shp", proj4string = CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"))
-# Reck <- spTransform(Reck, CRSobj = CRS(ProjLaea))
-# plot(Reck)
-# xy <- locator(n=10)
-# xy <- do.call("cbind", xy)
-# 
-# write.table(xy, file="C:/Users/Bobo/Desktop/Wing_GA_Pkg/__ExampleFiles/Locator.csv", sep = ";",dec = ".")
-# tsttbl <- read.table("C:/Users/Bobo/Desktop/Wing_GA_Pkg/__ExampleFiles/Locator.csv", header=T, sep=";", quote='"', dec = ".", row.names = 1);tsttbl
-# plot(Reck);points(tsttbl)
-# 
-# 
-# data.in = as.data.frame(cbind(wd=0, ws=10))
-# TestResult <- testLayoutNoRest(Polygon1 = Reck,method = "Data", dataInput = tsttbl, RotorR = 30,
-#            SurfaceRoughness = 0.3, n = 5, windata = data.in)
-# #
-# plotTestResult(TestResult,Reck)
-# 
-# leafletPlotSing(besteSolution = TestResult, Polygon1 = Reck)
-
-# 
-# 
-# 
-# 
-# 
