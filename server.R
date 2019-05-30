@@ -1,8 +1,8 @@
 
 ## SOURCING / INPUTS #################
 source("www/R/TestLayouts.R", local = T)
-source("www/R/genAlgo1.R", local = T)
-source("www/R/plotResults1.R", local = T)
+source("www/R/genAlgo.R", local = T)
+source("www/R/plotResults.R", local = T)
 source("www/R/plotparkfitness.R", local = T)
 source("www/R/leafletPlot.R", local = T)
 source("www/R/leafletPlotSing.R", local = T)
