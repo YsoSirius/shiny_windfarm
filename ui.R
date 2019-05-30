@@ -269,11 +269,11 @@ ui <- fluidPage(
                                          div(id="RGUI1",
                                              h4("Best Solution:"),
                                              
-                                             div(style="display:inline-block; margin-right:5px",
+                                             div(style="display:inline-block; margin-right:30px; float: left;",
                                                  radioButtons(inputId="EneEff", label="Plot the best Efficiency or Energy solution",
                                                               choices = c("Energy","Efficiency"), selected = "Energy", inline = T)
                                              ),
-                                             div(style="display:inline-block; margin-right:5px",
+                                             div(style="display:inline-block; margin-right:5px; float: left;",
                                                  numericInput("PlBeOn", label = "Which best solution should be plotted", min = 1, max = 5,
                                                               value = 1,step = 1)),
                                              verbatimTextOutput("prntwhateveritis1"),

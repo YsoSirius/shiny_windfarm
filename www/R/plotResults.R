@@ -1,69 +1,81 @@
-#' @title Plot the best Results
-#' @name plotResult
-#' @description  Plot the best resulting solutions of the genetic algorithm.
-#' Depending on \code{plotEn}, either the best energy or efficiency solutions
-#' can be plotted. \code{best} indicates the amount of best solutions that
-#' should be plotted.
-#'
-#' @export
-#'
-#' @importFrom raster crs getData crop mask projectRaster raster getData
-#' reclassify plot calc extract cellStats terrain resample overlay res
-#' @importFrom sp spTransform
-#' @importFrom grDevices colorRampPalette
-#' @importFrom graphics mtext par plot
-#' @importFrom utils read.csv
-#' @importFrom calibrate textxy
-#' @importFrom stats dist
-#'
-#' @param result An output matrix of the function \code{\link{genAlgo}},
-#' which has stored all relevant information. (matrix)
-#' @param Polygon1 The considered area as shapefile. (SpatialPolygons)
-#' @param best A numeric value indicating how many of the best individuals
-#' should be plotted. (numeric)
-#' @param plotEn A numeric value that indicates if the best energy or
-#' efficiency output should be plotted. If (plotEn==1) plots the best energy
-#' solutions and (plotEn==2) plots the best efficiency solutions. (numeric)
-#' @param topographie A logical value, indicating whether terrain effects
-#' should be considered and plotted or not. (logical)
-#' @param Grid The grid as SpatialPolygons, which is obtained from
-#' \code{\link{GridFilter}} and used for plotting.
-#' @param Projection A desired Projection can be used instead
-#' of the default Lambert Azimuthal Equal Area Projection. (character)
-#'
-#' @return Returns a data.frame of the best (energy/efficiency) individual
-#' during all iterations. (data.frame)
-#'
-#' @author Sebastian Gatscha
-plotResult <- function(result, Polygon1, best = 1, plotEn = 1,
-                       topographie = FALSE, Grid, Projection){
-  
-  ## Set graphical parameters
+plotResult <- function(result, Polygon1, best = 3, plotEn = 1,
+                       topographie = FALSE, Grid, Projection,
+                       sourceCCLRoughness, sourceCCL,
+                       weibullsrc){
   op <- par(ask = FALSE)
   on.exit(par(op))
   par(mfrow = c(1, 1))
   
+  # result = GA
+  
   ## Check Projections and reference systems
+  Polygon1 <- windfarmGA::isSpatial(Polygon1)
+  
   if (missing(Projection)) {
-    ProjLAEA = "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
+    ProjLAEA <- "+proj=laea +lat_0=52 +lon_0=10 +x_0=4321000 +y_0=3210000
     +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
   } else {
     ProjLAEA <- Projection
   }
-  
+  if (is.na(sp::proj4string(Polygon1))) {
+    ProjLAEA <- result[1,'inputData'][[1]]['Projection',][[1]]
+    sp::proj4string(Polygon1) <- ProjLAEA
+    # stop("Polygon is not projected.", call. = FALSE )
+    message("Polygon is not projected. Same projection from result will be assumed.")
+  }
   if (as.character(raster::crs(Polygon1)) != ProjLAEA) {
     Polygon1 <- sp::spTransform(Polygon1, CRSobj = ProjLAEA)
+  }
+  
+  if (missing(sourceCCL)) {
+    sourceCCL <- NULL
+  }
+  if (missing(sourceCCLRoughness)) {
+    sourceCCLRoughness <- NULL
+  }
+  
+  
+  ## Check Weibull Rasters
+  if (missing(weibullsrc)) {
+    weibullsrc <- NULL
+    col2res <- "lightblue"
+  } else {
+    PolyCrop <- sp::spTransform(Polygon1,
+                                CRSobj = sp::proj4string(weibullsrc[[1]]))
+    if (class(weibullsrc) == "list" & length(weibullsrc) == 2) {
+      wblcroped <- lapply(weibullsrc, function(x){
+        raster::crop(x, raster::extent(PolyCrop))})
+      wblcroped <- lapply(wblcroped, function(x){
+        raster::mask(x, PolyCrop)})
+      Erwartungswert <- wblcroped[[2]] * (gamma(1 + (1 / wblcroped[[1]])))
+    } else if (class(weibullsrc) == "list" & length(weibullsrc) == 1) {
+      wblcroped <- raster::crop(weibullsrc[[1]], raster::extent(PolyCrop))
+      wblcroped <- raster::mask(weibullsrc[[1]], PolyCrop)
+      Erwartungswert <- wblcroped[[1]]
+    } else if (class(weibullsrc) == "RasterLayer") {
+      wblcroped <- raster::crop(weibullsrc, raster::extent(PolyCrop))
+      wblcroped <- raster::mask(weibullsrc, PolyCrop)
+      Erwartungswert <- wblcroped
+    }
+    col2res <- "transparent"
+    alpha <- 0.9
+    Erwartungswert <- raster::projectRaster(Erwartungswert, 
+                                            crs = CRS(ProjLAEA))
+    # plot(Erwartungswert)
   }
   
   
   ## Creat a color ramp
   rbPal1 <- grDevices::colorRampPalette(c('green','red'))
   
+
   ## Plot Best Energy
   if (plotEn == 1) {
     
-    a <- sapply(result[,2], "[", "EnergyOverall")
-    b <- data.frame(sapply(a, function(x) x[1]))
+    a <- sapply(result[, 2], function(i) subset.matrix(i, 
+                                                       select = "EnergyOverall"))
+    
+    b <- a[1, ]
     order1 <- order(b, decreasing = T)
     result <- result[,2][order1]
     ledup <- length(result)
@@ -122,12 +134,16 @@ plotResult <- function(result, Polygon1, best = 1, plotEn = 1,
   
   ## Plot Best Efficiency
   if (plotEn == 2) {
-    a <- sapply(result[,3], "[", "EfficAllDir")
-    b <- data.frame(sapply(a, function(x) x[1]))
+    
+    a <- sapply(result[, 2], function(i) subset.matrix(i, 
+                                                       select = "EfficAllDir"))
+    
+    b <- a[1, ]
     order2 <- order(b, decreasing = T)
+
     result <- result[,3][order2]
     ledup <- length(result)
-
+    
     rectid <- lapply(result, function(x) x[,8])
     rectidt <- !duplicated(rectid)
     result <- result[rectidt]
@@ -177,5 +193,5 @@ plotResult <- function(result, Polygon1, best = 1, plotEn = 1,
     ResPlotResult <- EfficiencyBest
   }
   
-  return(ResPlotResult)
+  invisible(ResPlotResult)
 }

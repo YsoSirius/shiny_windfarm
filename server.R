@@ -1,13 +1,11 @@
 
 ## SOURCING / INPUTS #################
 source("www/R/TestLayouts.R", local = T)
-source("www/R/plotResults.R", local = T)
+source("www/R/genAlgo1.R", local = T)
+source("www/R/plotResults1.R", local = T)
 source("www/R/plotparkfitness.R", local = T)
 source("www/R/leafletPlot.R", local = T)
 source("www/R/leafletPlotSing.R", local = T)
-
-
-
 #################
 
 server <- function(input, output, session) {
@@ -25,7 +23,7 @@ server <- function(input, output, session) {
   })
 
   observe({
-    if(v$valueButton==2) {
+    if (v$valueButton == 2) {
       v$valueButton = 0
     }
   })
@@ -35,16 +33,16 @@ server <- function(input, output, session) {
   
   ## Navigation ##################
   observeEvent(input$GridButSum, {
-    shinyjs::toggle(id = "HidTextDiv", anim = T,animType = "slide",time=0.5)
+    shinyjs::toggle(id = "HidTextDiv", anim = T,animType = "slide", time = 0.5)
   })
   observeEvent(input$GridBut, {
-    shinyjs::toggle(id = "HidGridDiv", anim = T,animType = "slide",time=0.5)
+    shinyjs::toggle(id = "HidGridDiv", anim = T,animType = "slide", time = 0.5)
   })
   observeEvent(input$TransPol, {
-    shinyjs::toggle(id = "HidTransPol", anim = T,animType = "slide",time=0.5)
+    shinyjs::toggle(id = "HidTransPol", anim = T,animType = "slide", time = 0.5)
   })
   observeEvent(input$WindButSum, {
-    shinyjs::toggle(id = "WindButDiv", anim = T,animType = "slide",time=0.4)
+    shinyjs::toggle(id = "WindButDiv", anim = T,animType = "slide", time = 0.4)
   })
   observe({
     shinyjs::toggleState(id = "Submit", condition = input$CheckGA_SHID)
@@ -55,16 +53,16 @@ server <- function(input, output, session) {
     shinyjs::disable(id = "HidTransPol")
     shinyjs::disable(id = "HidGridDiv")
     shinyjs::disable(id = "CheckButGA_Go")
-    shinyjs::reset(id="ResGA")
-    shinyjs::show(id="ResGA",  anim = T,animType = "fade",time=0.1)
+    shinyjs::reset(id = "ResGA")
+    shinyjs::show(id = "ResGA", anim = T, animType = "fade", time = 0.1)
   })
   observeEvent(input$Reset, {
-    shinyjs::reset(id="PlotZent")
+    shinyjs::reset(id = "PlotZent")
     # shinyjs::hide(id="WiPlSHi")
-    shinyjs::reset(id="ResGA")
-    shinyjs::hide(id="ResGA", anim = T,animType = "fade",time=0)
+    shinyjs::reset(id = "ResGA")
+    shinyjs::hide(id = "ResGA", anim = T, animType = "fade", time = 0)
     # shinyjs::reset(id="WiPlSHi")
-    shinyjs::hide(id="WindButDiv",  anim = T,animType = "fade",time=0)
+    shinyjs::hide(id = "WindButDiv",  anim = T,animType = "fade", time = 0)
     # shinyjs::reset(id="WindButDiv")
     shinyjs::enable(id = "POCSBO")
     # shinyjs::reset(id="POCSBO")
@@ -77,9 +75,9 @@ server <- function(input, output, session) {
     shinyjs::enable(id = "POCSBO4")
     # shinyjs::reset(id="POCSBO4")
     shinyjs::enable(id = "POCSBO5")
-    shinyjs::reset(id="POCSBO5")
+    shinyjs::reset(id = "POCSBO5")
     shinyjs::enable(id = "CheckGA_SHID")
-    shinyjs::reset(id="CheckGA_SHID")
+    shinyjs::reset(id = "CheckGA_SHID")
     shinyjs::enable(id = "ALLINPUTS")
     # shinyjs::reset(id = "ALLINPUTS")
     shinyjs::enable(id = "ALLINPUTS1")
@@ -97,7 +95,7 @@ server <- function(input, output, session) {
       if (v$valueButton == 1) {
         shinyjs::onclick("runExample",shinyjs::show("WiPlSHi", anim = TRUE, animType = "fade", time = 0))
       } else {
-          if (!is.null(input$Wind_SHID)){
+          if (!is.null(input$Wind_SHID)) {
             shinyjs::onclick("Wind_SHID", shinyjs::show("WiPlSHi", anim = TRUE, animType = "fade", time = 0.2))
           } else {
             shinyjs::hide("WiPlSHi", anim = TRUE, animType = "fade", time = 0)
@@ -105,24 +103,24 @@ server <- function(input, output, session) {
       }
   })
   observe({
-    shinyjs::toggle(id = "DtPoTst", condition = input$TestMethod== 'Data')
+    shinyjs::toggle(id = "DtPoTst", condition = input$TestMethod == 'Data')
   })
   observeEvent(input$ResProjDef, {
-    shinyjs::reset(id="SpRefSys")
+    shinyjs::reset(id = "SpRefSys")
   })
   
   observeEvent(input$absoPBU, {
-    shinyjs::toggle(id = "absoPanel", anim = T,animType = "slide",time=0.4)
+    shinyjs::toggle(id = "absoPanel", anim = T, animType = "slide", time = 0.4)
   })
   observeEvent(input$absoPBU1, {
-    shinyjs::toggle(id = "absoPanel1", anim = T,animType = "slide",time=0.4)
+    shinyjs::toggle(id = "absoPanel1", anim = T, animType = "slide", time = 0.4)
   })
   
   observeEvent(input$RGUI1_AB, {
-    shinyjs::toggle(id = "RGUI1", anim = T,animType = "slide",time=0.4)
+    shinyjs::toggle(id = "RGUI1", anim = T, animType = "slide", time = 0.4)
   })
   observeEvent(input$RGUI2_AB, {
-    shinyjs::toggle(id = "RGUI2", anim = T,animType = "slide",time=0.4)
+    shinyjs::toggle(id = "RGUI2", anim = T, animType = "slide", time = 0.4)
   })
   observeEvent(input$RGUI3_AB, {
     shinyjs::toggle(id = "RGUI3", anim = T, animType = "slide", time = 0.4)
@@ -153,34 +151,33 @@ server <- function(input, output, session) {
     for (i in 1:nrow(myshape)) {
       file.rename(myshape[i,4], paste0(dir,"/",myshape[i,1]))
     }
-    getshp <- list.files(dir, pattern="*.shp", full.names=TRUE)
-    getshx <- list.files(dir, pattern="*.shx", full.names=TRUE)
-    getdbf <- list.files(dir, pattern="*.dbf", full.names=TRUE)
-    req(getshp)
-    req(getshx)
-    req(getdbf)
+    getshp <- list.files(dir, pattern = "*.shp", full.names = TRUE)
+    getshx <- list.files(dir, pattern = "*.shx", full.names = TRUE)
+    getdbf <- list.files(dir, pattern = "*.dbf", full.names = TRUE)
+    req(getshp, getdbf, getshx)
     
     if (suppressWarnings(!is.na(as.numeric(input$SpRefSys)))) {
       proj2num <- as.numeric(input$SpRefSys)
       projUser <- as.character(proj2num); 
       proj2url <- paste0("http://spatialreference.org/ref/epsg/",projUser, "/proj4/"); 
       proj2use <- suppressWarnings(try(readLines(proj2url, warn = F), silent = T)); 
-      if (class(proj2use)=="try-error") {
+      if (class(proj2use) == "try-error") {
         print("Please add a correct EPSG code.")
         shp <- NULL
       } else {
         shp <- suppressWarnings(maptools::readShapePoly(getshp, proj4string = CRS(proj2use)));
       }
     } else {
-      proj4check <- suppressWarnings(try(CRS(input$SpRefSys, doCheckCRSArgs = T), silent=T))
-      if (class(proj4check)=="try-error") {
+      proj4check <- suppressWarnings(try(CRS(input$SpRefSys, doCheckCRSArgs = T), silent = T))
+      if (class(proj4check) == "try-error") {
         print("Please add a correct Proj4 text.")     
         shp <- NULL
       } else {
         # shpnoext <- sub(".+\\/","",getshp); shpnoext
         # shpnoext <- sub(".shp","",shpnoext);shpnoext
         # getproj <- list.files(dir, pattern="*.prj", full.names=TRUE)
-        shp <- suppressWarnings(maptools::readShapePoly(getshp, proj4string = CRS(as.character(input$SpRefSys))));
+        shp <- suppressWarnings(maptools::readShapePoly(getshp, 
+                                                        proj4string = CRS(as.character(input$SpRefSys))));
         # rgdal::readOGR(dsn = dir, layer = shpnoext, p4s = (as.character(input$SpRefSys)), verbose = F);
       }
     }
@@ -202,7 +199,7 @@ server <- function(input, output, session) {
   ## Real World Map - Static ##################
   colorpal <- reactive({
     input$colorsRL
-    ccN <- sapply(input$colorsRL, FUN=function(x) col2rgb(x))
+    ccN <- sapply(input$colorsRL, FUN = function(x) col2rgb(x))
     ccN <- leaflet::colorNumeric(t(ccN),1:5)(1)
     ccN
   })
@@ -220,11 +217,13 @@ server <- function(input, output, session) {
     validate(
       need(!is.na(proj4string(shape2)), "Projection is missing.")
     )
-    if (proj4string(shape2) != "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs"){
-      shape2 <- suppressWarnings(try(spTransform(shape2, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")),silent = T))
+    if (proj4string(shape2) != "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs") {
+      shape2 <- suppressWarnings(try(
+        spTransform(shape2, CRS("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")),
+        silent = T))
     }
     
-    if (class(shape2)=="try-error") {
+    if (class(shape2) == "try-error") {
       message("Please add a correct EPSG code.")
     } else {
       popup <- paste0("<strong>Windfarm Area</strong>")
@@ -233,17 +232,15 @@ server <- function(input, output, session) {
       opa <- opacRL()
       isolate(leaflet() %>%
                 addProviderTiles(input$bmap, options = providerTileOptions(noWrap = TRUE)) %>%
-                addPolygons(data=shape2, weight = 3, popup=popup,
-                            color=pal, fillColor = pal,opacity = opa, fillOpacity = opa)
+                addPolygons(data = shape2, weight = 3, popup = popup,
+                            color = pal, fillColor = pal,opacity = opa, fillOpacity = opa)
       )
     }
-    
-    
   })
   
   colorpal1 <- reactive({
     input$colorsRL1
-    ccN <- sapply(input$colorsRL1, FUN=function(x) col2rgb(x))
+    ccN <- sapply(input$colorsRL1, FUN = function(x) col2rgb(x))
     ccN <- leaflet::colorNumeric(t(ccN),1:5)(1)
     ccN
   })
@@ -943,6 +940,9 @@ server <- function(input, output, session) {
           # }
           TopoIn = FALSE
           
+          # browser()
+          # save(GA, file = "GAresult.rda")
+          # save(Polygon1, file = "Polygon1.rda")
           GA <- genAlgo(Polygon1 = Polygon1,
                         Rotor = input$Roto_SHID, 
                         fcrR = input$fcrr_SHID,
@@ -963,7 +963,7 @@ server <- function(input, output, session) {
                         Projection =  ProjLaea,
                         sourceCCL = ccl,
                         sourceCCLRoughness = CCLRough
-                        # ,updateProgress1
+                        ,updateProgress1 = updateProgress1
           )
         }
       }

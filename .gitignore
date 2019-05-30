@@ -10,3 +10,4 @@ readme.txt
 ^rsconnect/*
 rsconnect/*
 rsconnect/
+*.rda
